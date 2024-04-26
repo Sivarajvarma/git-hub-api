@@ -25,19 +25,17 @@ fetch_users() {
         exit 1
     fi
     
-    # Check if the request returned an error
-    error=$(echo "$users_response" | jq -r '.message')
-    if [ "$error" != "null" ]; then
-        echo "Error: $error"
-        exit 1
-    fi
-    
     # Parse the JSON response and extract user information
-    user_info=$(echo "$users_response" | jq -r '.[] | "\(.login) - \(.url)"')
+    user_info=$(echo "$users_response" | jq -r '.[].login')
     
-    # Print the list of users
-    echo "Users in organization '${ORG_NAME}':"
-    echo "$user_info"
+    # Check if any users are found
+    if [ -z "$user_info" ]; then
+        echo "No users found in organization '${ORG_NAME}'."
+    else
+        # Print the list of users
+        echo "Users in organization '${ORG_NAME}':"
+        echo "$user_info"
+    fi
 }
 
 # Function to fetch repositories
@@ -51,19 +49,17 @@ fetch_repos() {
         exit 1
     fi
     
-    # Check if the request returned an error
-    error=$(echo "$repos_response" | jq -r '.message')
-    if [ "$error" != "null" ]; then
-        echo "Error: $error"
-        exit 1
-    fi
-    
     # Parse the JSON response and extract repository information
-    repo_info=$(echo "$repos_response" | jq -r '.[] | "\(.name) - \(.html_url)"')
+    repo_info=$(echo "$repos_response" | jq -r '.[].name')
     
-    # Print the list of repositories
-    echo "Repositories in organization '${ORG_NAME}':"
-    echo "$repo_info"
+    # Check if any repositories are found
+    if [ -z "$repo_info" ]; then
+        echo "No repositories found in organization '${ORG_NAME}'."
+    else
+        # Print the list of repositories
+        echo "Repositories in organization '${ORG_NAME}':"
+        echo "$repo_info"
+    fi
 }
 
 # Main function to run the script
